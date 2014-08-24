@@ -47,82 +47,149 @@ run_analysis.R
 #Read in the necessary files for the test and training data set
 
 xtrain <- read.table("X_train.txt")
+
 ytrain <- read.table("Y_train.txt")
+
 subjecttrain <- read.table("subject_train.txt")
 
 xtest <- read.table("X_test.txt")
+
 ytest <- read.table("Y_test.txt")
+
 subjecttest <- read.table("subject_test.txt")
 
 activitylabels <- read.table("activity_labels.txt")
+
 features <- read.table("features.txt")
 
+
 #assign column names to the test and train observations using the features data
+
 colnames(xtrain)=features[,2]
+
 colnames(xtest)=features[,2]
 
+
+
 #assign column names to the subject and activity columns
+
 colnames(ytrain)="activityid"
+
 colnames(ytest)="activityid"
+
 colnames(subjecttrain)="subjectid"
+
 colnames(subjecttest)="subjectid"
 
+
+
 #combine the columns of the subjects, activities, and results
+
 traindata <- cbind(subjecttrain,ytrain,xtrain)
+
 testdata <- cbind(subjecttest,ytest,xtest)
 
+
+
 #combine the test and training data
+
 masterdata <- rbind(traindata,testdata)
+
 
 
 #Step2
 
 #assign a vector to the column names of the data
+
+
 mastercolumns = colnames(masterdata)
 
+
 #Use a logical vector to only keep the columns with subject, activity, and mean, and standard dev
+
 #did not include columns with mean freq
-relevantcolumns = ( grepl("subjectid",mastercolumns) | grepl("activityid",mastercolumns) | grepl("-mean..",mastercolumns) & !grepl("-meanFreq..",mastercolumns) | grepl("-std..",mastercolumns) & !grepl("-std()..-",mastercolumns))
+
+relevantcolumns = ( grepl("subjectid",mastercolumns) | grepl("activityid",mastercolumns) | 
+grepl("-mean..",mastercolumns) & !grepl("-meanFreq..",mastercolumns) | grepl("-std..",mastercolumns) & 
+!grepl("-std()..-",mastercolumns))
+
+
 
 #set the vector to TRUE
+
 masterdata = masterdata[relevantcolumns==TRUE]
+
+
+
 
 
 #Step3
 
+
+
 #assign column names for the activities
+
 names(activitylabels)[1]<-"activityid"
+
 names(activitylabels)[2]<-"activity"
 
+
+
 #merge the descriptive activity names to the data set
+
 masterdata = merge(masterdata, activitylabels)
+
+
+
 
 
 #Step4
 
+
+
 #clean up column names to make them descriptive
+
 #spell out words fully and remove typos
+
 names(masterdata) <- gsub("^t","Time",names(masterdata))
+
 names(masterdata) <- gsub("^f","Frequency",names(masterdata))
+
 names(masterdata) <- gsub("Acc","Acceleration",names(masterdata))
+
 names(masterdata) <- gsub("Mag","Magnitude",names(masterdata))
+
 names(masterdata) <- gsub("Gyro","Gyroscope",names(masterdata))
+
 names(masterdata) <- gsub("mean","Mean",names(masterdata))
+
 names(masterdata) <- gsub("std","StdDev",names(masterdata))
+
 names(masterdata) <- gsub("-","",names(masterdata))
+
 names(masterdata) <- gsub("BodyBody","Body",names(masterdata))
+
+
 
 #Step5
 
+
 #create new tidy data with activity name removed
+
 masterdatanoactivity = masterdata[,names(masterdata) != 'activity']
 
+
 #calculate the means of each variable by each subject and each activity
+
 tidydataset = aggregate(masterdatanoactivity[,names(masterdatanoactivity) != c('activityid','subjectid')],by=list(activityid=masterdatanoactivity$activityid, subjectid=masterdatanoactivity$subjectid),mean)
 
+
 #add the activity label column back in the data set
+
 tidydataset = merge(tidydataset, activitylabels,by='activityid',all.x=TRUE)
 
+
 #write the dataset as a txt file
+
 write.table(tidydataset, "tidydataset.txt", row.names=FALSE)
 
