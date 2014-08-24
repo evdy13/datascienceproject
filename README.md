@@ -45,15 +45,15 @@ run_analysis.R
 #Step1
 
 #Read in the necessary files for the test and training data set
-> setwd("C:/Users/vzb6rz/R/data_cleansing/project/UCI HAR Dataset/train")
-> xtrain <- read.table("X_train.txt")
+
+xtrain <- read.table("X_train.txt")
 ytrain <- read.table("Y_train.txt")
 subjecttrain <- read.table("subject_train.txt")
-setwd("C:/Users/vzb6rz/R/data_cleansing/project/UCI HAR Dataset/test")
+
 xtest <- read.table("X_test.txt")
 ytest <- read.table("Y_test.txt")
 subjecttest <- read.table("subject_test.txt")
-setwd("C:/Users/vzb6rz/R/data_cleansing/project/UCI HAR Dataset")
+
 activitylabels <- read.table("activity_labels.txt")
 features <- read.table("features.txt")
 
